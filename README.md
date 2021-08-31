@@ -1,2 +1,2 @@
 # wmsel
-Simple display manager-like Xorg and Wayland Session terminal selector script written in python.
+Simple terminal display manager with Xorg and Wayland Session support written in python.

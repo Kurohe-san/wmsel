@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+import json
+import os
+from colorama import Fore, Style
+import time
+
+CONFIG_DIR = os.path.expanduser('~')+'/.config'
+
+wmlist = {}
+
+wm_choice = ""
+wm_sel_list = []
+
+def input_error():
+    input(Fore.RED+'ERROR: Invalid input, press Enter to try again.'+Style.RESET_ALL)
+
+def front_end(expand = -1,wmlist = {}):
+    no_last_used = False
+    last_used = ""
+    os.system('clear')
+    try:
+        with open(CONFIG_DIR+"/wmsel/.lastused","r") as f:
+            last_used = f.read()
+    except Exception:
+        print(Fore.YELLOW+"WARNING: No last used setup found")
+        no_last_used=True
+    print(Fore.MAGENTA+'\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')    
+    print(Fore.GREEN + 'Select your Window Manager / Desktop Environment:\n')
+    i = 0
+    for key in wmlist:
+        wm_sel_list.append(key)
+        print(f'{Fore.BLUE}{i+1}: {key}')
+        if expand == i:
+            print(Fore.YELLOW+f'Description: {wmlist[key]["desc"]}')
+            print(f'Display Server: {wmlist[key]["type"]}')
+            print(f'Link: {wmlist[key]["link"]}\n')
+        i+=1
+    print(Fore.MAGENTA+'\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~') 
+    print(Fore.BLUE+'\nq: None\neN: Expand number N')
+    if not no_last_used:
+        ch = input(Style.RESET_ALL+f'\nEnter your Choice\n[{last_used}] » ')
+    else:
+        ch = input(Style.RESET_ALL+f'\nEnter your Choice\n» ')
+    if ch == 'q':
+        exit(0)
+    elif ch.startswith('e') and len(ch) >= 2:
+        try:
+            return front_end(int(ch[-1])-1,wmlist)
+        except ValueError:
+            input_error()
+            return front_end(-1,wmlist)
+    elif ch == "":
+        return last_used
+    else:
+        try:
+            if int(ch) <= len(wm_sel_list):
+                return wm_sel_list[int(ch)-1]
+        except ValueError:
+            input_error()
+            return front_end(-1,wmlist)
+        
+
+# Get last used WM
+def last_used():
+    with open(CONFIG_DIR+"/wmsel/.lastused","r") as f:
+        return f.read()
+
+# Check if ~/.config/wmsel non-existent
+if not "wmsel" in os.listdir(CONFIG_DIR):
+    os.makedirs(CONFIG_DIR+"/wmsel")
+
+# Read in WM list
+with open(CONFIG_DIR+"/wmsel/wmlist.json","r") as f:
+    wmlist = json.load(f)
+
+# Front end prompt
+wm_choice = front_end(-1,wmlist)
+wm_command = wmlist[wm_choice]["command"]
+
+# Overwrite .xinitrc & startx || start wayland compositor
+if wmlist[wm_choice]["type"] == 'X':
+    os.system('startx /usr/bin/'+wm_command)
+elif wmlist[wm_choice]["type"] == 'Wayland':
+    os.system(wm_command)
+else:
+    print(Fore.RED+'ERROR: Invalid wmlist!'+Style.RESET_ALL)
+
+with open(CONFIG_DIR+"/wmsel/.lastused","w") as f:
+    f.write(wm_choice)

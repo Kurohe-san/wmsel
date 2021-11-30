@@ -12,6 +12,18 @@ wmlist = {}
 wm_choice = ""
 wm_sel_list = []
 
+HELP_STRING = """
+WMsel: Simple Xorg and Wayland Session selector written in Python
+
+Usage:
+  wmsel: start wmsel
+    --help: show this menu
+    --list: list all WM/DE configurations
+    add [NAME OF WM/DE]: download wmsel configuration for specified WM/DE (standard source: \"kurohe.xyz/repos/wmsel/wm_configs/\") and append to config file
+    remove [NAME OF WM/DE]: remove existing configuration for specified WM/DE
+"""
+
+
 def input_error():
     input(Fore.RED+'ERROR: Invalid input, press Enter to try again.'+Style.RESET_ALL)
 
@@ -99,10 +111,14 @@ if __name__ == "__main__":
     # Help menu
     elif len(sys.argv) == 2:
         if sys.argv[1] == "--help":
-            print("WMsel: Simple Xorg and Wayland Session selector written in Python\n\nUsage:\n\twmsel: start wmsel\n\t\t--help: show this menu\n\t\tadd [NAME OF WM/DE]: download wmsel configuration for specified WM/DE (standard source: \"kurohe.xyz/repos/wmsel/wm_configs/\") and append to config file")
+            print(HELP_STRING)
+        elif sys.argv[1] == "--list":
+            with open(CONFIG_DIR+"/wmsel/wmlist.json","r") as ls:
+                for k in json.load(ls).keys():
+                    print(k)
         else:
             print(Fore.RED+"ERROR: invalid arguments"+Style.RESET_ALL)
-    
+
     elif len(sys.argv) == 3:
         # Add configuration
         if sys.argv[1] == "add":

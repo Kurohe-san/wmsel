@@ -99,7 +99,7 @@ if __name__ == "__main__":
         if wmlist[wm_choice]["type"] == 'X':
             with open(CONFIG_DIR+"/wmsel/.lastused","w") as f:
                 f.write(wm_choice)
-            os.system('startx /usr/bin/'+wm_command)
+            os.system('startx '+wm_command)
         elif wmlist[wm_choice]["type"] == 'Wayland':
             with open(CONFIG_DIR+"/wmsel/.lastused","w") as f:
                 f.write(wm_choice)

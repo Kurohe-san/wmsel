@@ -95,18 +95,10 @@ if __name__ == "__main__":
         wm_choice = front_end(-1,wmlist)
         wm_command = wmlist[wm_choice]["command"]
 
-        # startx path/to/wm_binary || start wayland compositor
-        if wmlist[wm_choice]["type"] == 'X':
-            with open(CONFIG_DIR+"/wmsel/.lastused","w") as f:
-                f.write(wm_choice)
-            os.system('startx '+wm_command)
-        elif wmlist[wm_choice]["type"] == 'Wayland':
-            with open(CONFIG_DIR+"/wmsel/.lastused","w") as f:
-                f.write(wm_choice)
-            os.system(wm_command)
-        else:
-            print(Fore.RED+'ERROR: Invalid wmlist!'+Style.RESET_ALL)
-
+        # start X window manager / Wayland compositor
+        with open(CONFIG_DIR+"/wmsel/.lastused","w") as f:
+            f.write(wm_choice)
+        os.system(wm_command)
 
     # Help menu
     elif len(sys.argv) == 2:
